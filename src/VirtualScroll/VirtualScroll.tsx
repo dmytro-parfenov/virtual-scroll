@@ -50,12 +50,14 @@ export const VirtualScroll: FC<Props> = ({
                 style={{height: `${containerHeight}px`}}
                 onScroll={handleScroll}>
         <div className="spacer"
+             role="list"
              style={{height: `${scrollHeight}px`}}>
             {Array.from({length: visibleSize}).map((_, index) => {
                 const itemIndex = startIndex + index;
                 const top = itemIndex * itemHeight;
 
                 return <div className="item"
+                            role="listitem"
                             key={itemKey(itemIndex)}
                             style={{height: itemHeight, transform: `translateY(${top}px)`}}>
                     {renderItem(itemIndex)}
