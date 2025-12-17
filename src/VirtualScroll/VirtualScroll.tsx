@@ -40,7 +40,7 @@ export const VirtualScroll: FC<Props> = ({
     const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - bufferSize);
     const endIndex = Math.min(itemsCount - 1, Math.floor((scrollTop + containerHeight) / itemHeight) + bufferSize);
 
-    const items = useMemo(() => Array.from({length: itemsCount}).slice(startIndex, endIndex + 1), [itemsCount, startIndex, endIndex]);
+    const visibleSize = endIndex - startIndex + 1;
 
     const handleScroll = useMemo<UIEventHandler<HTMLDivElement>>(() => throttle((event) => {
         setScrollTop((event.target as HTMLDivElement).scrollTop);
@@ -51,7 +51,7 @@ export const VirtualScroll: FC<Props> = ({
                 onScroll={handleScroll}>
         <div className="spacer"
              style={{height: `${scrollHeight}px`}}>
-            {items.map((_, index) => {
+            {Array.from({length: visibleSize}).map((_, index) => {
                 const itemIndex = startIndex + index;
                 const top = itemIndex * itemHeight;
 
