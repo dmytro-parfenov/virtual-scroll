@@ -34,8 +34,6 @@ export const VirtualScroll: FC<Props> = ({
         requestAnimationFrame(() => setScrollTop(top))
     }, []);
 
-    console.log(scrollTop);
-
     return <div className="scroll-container"
                 style={{height: `${containerHeight}px`}}
                 onScroll={handleScroll}>
