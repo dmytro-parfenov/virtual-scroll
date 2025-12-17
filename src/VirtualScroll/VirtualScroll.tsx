@@ -1,61 +1,54 @@
-import {type ComponentType, type UIEventHandler, useCallback, useMemo, useState} from "react";
+import {type FC, type Key, type ReactNode, type UIEventHandler, useCallback, useMemo, useState} from "react";
 import './VirtualScroll.css'
 
-const MAX_SCROLL_HEIGHT = 1000000;
-
-type WithKey = {
-    key: string;
-}
-
-type Props<T extends WithKey> = {
-    items: T[];
+type Props = {
+    itemsCount: number;
     containerHeight: number;
     itemHeight: number;
     bufferSize: number;
-    ItemComponent: ComponentType<T>;
+    itemKey: (index: number) => Key;
+    renderItem: (index: number) => ReactNode;
 };
 
-export const VirtualScroll = <T extends WithKey, >({
-                                                       items,
-                                                       containerHeight,
-                                                       itemHeight,
-                                                       bufferSize,
-                                                       ItemComponent
-                                                   }: Props<T>) => {
-    const totalScrollHeight = items.length * itemHeight;
+export const VirtualScroll: FC<Props> = ({
+                                             itemsCount,
+                                             containerHeight,
+                                             itemHeight,
+                                             bufferSize,
+                                             itemKey,
+                                             renderItem
+                                         }) => {
+    const scrollHeight = itemsCount * itemHeight;
 
-    const virtualScrollHeight = Math.min(MAX_SCROLL_HEIGHT, totalScrollHeight);
+    const [scrollTop, setScrollTop] = useState(0);
 
-    const [virtualScrollTop, setVirtualScrollTop] = useState(0);
+    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - bufferSize);
 
-    const scrollScale = totalScrollHeight > virtualScrollHeight ? (totalScrollHeight - containerHeight) / (virtualScrollHeight - containerHeight) : 1;
+    const endIndex = Math.min(itemsCount - 1, Math.floor((scrollTop + containerHeight) / itemHeight) + bufferSize);
 
-    const startIndex = Math.max(0, Math.floor(virtualScrollTop / itemHeight) - bufferSize);
-
-    const endIndex = Math.min(items.length - 1, Math.floor((virtualScrollTop + containerHeight) / itemHeight) + bufferSize);
-
-    const visibleItems = useMemo(() => items.slice(startIndex, endIndex + 1), [items, startIndex, endIndex]);
+    const items = useMemo(() => Array.from({length: itemsCount}).slice(startIndex, endIndex + 1), [itemsCount, startIndex, endIndex]);
 
     const handleScroll = useCallback<UIEventHandler<HTMLDivElement>>((event) => {
-        const value = event.currentTarget.scrollTop;
+        const top = event.currentTarget.scrollTop;
 
-        requestAnimationFrame(() => setVirtualScrollTop(value * scrollScale))
-    }, [scrollScale]);
+        requestAnimationFrame(() => setScrollTop(top))
+    }, []);
+
+    console.log(scrollTop);
 
     return <div className="scroll-container"
                 style={{height: `${containerHeight}px`}}
                 onScroll={handleScroll}>
         <div className="spacer"
-             style={{height: `${virtualScrollHeight}px`}}>
-            {visibleItems.map((item, index) => {
-                const virtualTop = (startIndex + index) * itemHeight;
-                const top = virtualTop - (virtualScrollTop - (virtualScrollTop / scrollScale));
+             style={{height: `${scrollHeight}px`}}>
+            {items.map((_, index) => {
+                const itemIndex = startIndex + index;
+                const top = itemIndex * itemHeight;
 
                 return <div className="item"
-                            id={item.key}
-                            key={item.key}
+                            key={itemKey(itemIndex)}
                             style={{height: itemHeight, transform: `translateY(${top}px)`}}>
-                    <ItemComponent {...item} key={item.key}/>
+                    {renderItem(itemIndex)}
                 </div>
             })}
         </div>

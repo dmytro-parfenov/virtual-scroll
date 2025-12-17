@@ -8,4 +8,5 @@
 
 .item {
     position: absolute;
+    will-change: transform
 }
