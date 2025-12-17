@@ -9,12 +9,13 @@ function App() {
 
     return (
         <div>
-            <VirtualScroll itemsCount={100}
+            <VirtualScroll itemsCount={1000}
                            containerHeight={400}
                            itemHeight={50}
-                           bufferSize={2}
                            itemKey={itemKey}
-                           renderItem={renderItem}/>
+                           renderItem={renderItem}
+                           bufferSize={2}
+                           throttleDelayMs={100}/>
         </div>
     )
 }
