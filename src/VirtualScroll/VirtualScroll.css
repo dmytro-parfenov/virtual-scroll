@@ -1,0 +1,11 @@
+.scroll-container {
+    overflow-y: auto;
+}
+
+.spacer {
+    position: relative;
+}
+
+.item {
+    position: absolute;
+}
