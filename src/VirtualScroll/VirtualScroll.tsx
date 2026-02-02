@@ -46,9 +46,11 @@ export const VirtualScroll: FC<Props> = ({
         setScrollTop((event.target as HTMLDivElement).scrollTop);
     }, throttleDelayMs), [throttleDelayMs]);
 
-    return <div className="scroll-container"
-                style={{height: `${containerHeight}px`}}
-                onScroll={handleScroll}>
+    return <div
+        data-cy="scroll-container"
+        className="scroll-container"
+        style={{height: `${containerHeight}px`}}
+        onScroll={handleScroll}>
         <div className="spacer"
              role="list"
              style={{height: `${scrollHeight}px`}}>
